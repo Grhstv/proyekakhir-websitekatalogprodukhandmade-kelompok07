@@ -1,42 +1,25 @@
 <?php
-// Memuat file koneksi database agar script bisa berkomunikasi dengan MySQL
 require_once 'config/koneksi.php';
-
-// Memuat pelindung halaman untuk memastikan hanya user yang sudah login yang bisa mengakses
 require_once 'middleware/auth_check.php';
 
-// Inisialisasi awal variabel pencarian. Tanda "%" berarti menampilkan semua data jika tidak ada pencarian
 $search_query = "%";
-$search_text = ""; // Menyimpan teks murni yang diketik user untuk ditampilkan kembali di kolom input
+$search_text = "";
 
-// Alur Logika Pencarian: Memeriksa apakah parameter 'search' dikirim via URL dan tidak kosong
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
-    $search_text = trim($_GET['search']); // Mengambil teks pencarian dan menghapus spasi di awal/akhir
-    $search_query = "%" . $search_text . "%"; // Mengubah menjadi format LIKE SQL (Contoh: %Sling%)
+    $search_text = trim($_GET['search']); 
+    $search_query = "%" . $search_text . "%";
 }
 
-// Menyiapkan Query SQL dengan Prepared Statement (Lebih aman dari SQL Injection)
-// Mengambil semua data produk yang nama_barang atau kategori-nya mirip dengan kata kunci, diurutkan dari yang terbaru (id DESC)
 $stmt = $conn->prepare("SELECT * FROM produk WHERE nama_barang LIKE ? OR kategori LIKE ? ORDER BY id DESC");
-
-// Mengikat parameter string ("ss") dari variabel $search_query ke tanda tanya (?) di dalam query di atas
 $stmt->bind_param("ss", $search_query, $search_query);
-
-// Mengeksekusi perintah SQL yang sudah siap
 $stmt->execute();
-
-// Mengambil seluruh baris hasil eksekusi dari database
 $result = $stmt->get_result();
-
-// Menyiapkan array kosong untuk menampung data produk hasil database
 $result_data = [];
 
-// Melakukan perulangan (looping) untuk memindahkan setiap baris data menjadi array asosiatif
 while ($row = $result->fetch_assoc()) {
-    $result_data[] = $row; // Memasukkan baris data satu per satu ke dalam array $result_data
+    $result_data[] = $row;
 }
 
-// Menutup statement database untuk menghemat sumber daya server
 $stmt->close();
 ?>
 <!DOCTYPE html>
@@ -231,12 +214,10 @@ $stmt->close();
     </footer>
 
     <script>
-    // Menghubungkan ID element HTML ke variabel Javascript untuk kontrol tema dark/light
     const themeToggleBtn = document.getElementById('theme-toggle');
     const darkIcon = document.getElementById('theme-toggle-dark-icon');
     const lightIcon = document.getElementById('theme-toggle-light-icon');
 
-    // Fungsi sinkronisasi ikon tombol: Menampilkan ikon bulan saat mode terang, ikon matahari saat mode gelap
     function syncIcons() {
         if (document.documentElement.classList.contains('dark')) {
             darkIcon.classList.add('hidden');     
@@ -246,9 +227,8 @@ $stmt->close();
             darkIcon.classList.remove('hidden');   
         }
     }
-    syncIcons(); // Menjalankan fungsi sinkronisasi ikon pertama kali saat halaman dibuka
+    syncIcons();
 
-    // Event Listener: Mendengar aksi klik pada tombol tema, lalu mengganti setelan class tema dan memori lokal browser
     themeToggleBtn.addEventListener('click', function() {
         if (document.documentElement.classList.contains('dark')) {
             document.documentElement.classList.remove('dark');
@@ -257,12 +237,12 @@ $stmt->close();
             document.documentElement.classList.add('dark');
             localStorage.setItem('color-theme', 'dark');
         }
-        syncIcons(); // Sinkronisasi ulang tampilan ikon setelah tema diklik dan berubah
+        syncIcons(); 
     });
     </script>
 </body>
 </html>
 <?php 
-// ALUR TERAKHIR: Menutup total koneksi database MySQL secara resmi demi keamanan transmisi data aplikasi
+
 $conn->close(); 
 ?>
