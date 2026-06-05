@@ -73,7 +73,4 @@
     </footer>
     ```
 
-### 💡 Catatan Tambahan:
-1. **FontAwesome Icons (`fa-facebook`, dkk)**: Footer ini membutuhkan CDN FontAwesome agar ikon media sosial dan ikon info kantor muncul. Jika ikonnya belum muncul di website kamu, pastikan ada baris ini di dalam tag `<head>` pada file `index.php`:
-   ```html
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
